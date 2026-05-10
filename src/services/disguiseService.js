@@ -10,7 +10,7 @@ async function executePython(directorIp, script) {
   if (typeof result === 'string') {
     try {
       result = JSON.parse(result)
-    } catch (e) {}
+    } catch (_e) { /* not valid JSON, use as-is */ }
   }
   return result
 }

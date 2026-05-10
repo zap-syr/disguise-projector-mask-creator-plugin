@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 
-const props = defineProps({
+defineProps({
   maskType: { type: String, default: 'soft-edge' },
   selectedCount: { type: Number, default: 0 },
   creating: { type: Boolean, default: false },

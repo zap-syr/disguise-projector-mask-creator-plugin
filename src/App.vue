@@ -20,7 +20,7 @@ onMounted(async () => {
   try {
     const result = await getProjectors(directorIp)
     projectors.value = Array.isArray(result) ? result : []
-  } catch (e) {
+  } catch {
     fetchError.value = `Could not connect to Designer at ${directorIp}`
   } finally {
     loading.value = false
