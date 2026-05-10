@@ -31,32 +31,34 @@ Select one or more projectors, configure the mask settings in the right panel, a
 
 Choose between two mask types using the segmented control:
 
-| Type | Description |
-|---|---|
-| **Soft Edge Mask** | Creates a `SoftEdgeTexture` resource for each selected projector |
+| Type               | Description                                                                                                 |
+| ------------------ | ----------------------------------------------------------------------------------------------------------- |
+| **Soft Edge Mask** | Creates a `SoftEdgeTexture` resource for each selected projector                                            |
 | **Composite Mask** | Creates a `CompositeTexture` resource with one or more `SoftEdgeTexture` layers for each selected projector |
 
 ### Mask Resolution
 
-| Option | Description |
-|---|---|
+| Option                   | Description                                                          |
+| ------------------------ | -------------------------------------------------------------------- |
 | **Projector Resolution** | Each mask is sized to match its projector's native output resolution |
-| **Manual** | All masks are created at a fixed width × height entered manually |
+| **Manual**               | All masks are created at a fixed width × height entered manually     |
 
 ### Soft Edge Mask Options
 
-| Setting | Description |
-|---|---|
+| Setting    | Description                                                                                            |
+| ---------- | ------------------------------------------------------------------------------------------------------ |
 | **Suffix** | Text appended to the projector name to form the mask resource name (e.g. `_mask` → `Projector 1_mask`) |
-| **Assign on Projector Feed** | When enabled, the created mask is automatically assigned to the matching projector feed |
 
 ### Composite Mask Options
 
-| Setting | Description |
-|---|---|
-| **Layers** | Add one or more layers, each with a suffix and a blend mode. Suffixes must be unique and non-empty |
-| **Blend Mode** | Per-layer blend mode: Over, Alpha, Add, or Multiply |
-| **Assign on Projector Feed** | When enabled, the created composite mask is automatically assigned to the matching projector feed |
+| Setting        | Description                                                                                        |
+| -------------- | -------------------------------------------------------------------------------------------------- |
+| **Layers**     | Add one or more layers, each with a suffix and a blend mode. Suffixes must be unique and non-empty |
+| **Blend Mode** | Per-layer blend mode: Over, Alpha, Add, or Multiply                                                |
+
+### Assing on Projector Feed
+
+When enabled, the created composite mask is automatically assigned to the matching projector feed
 
 ## Issues
 
