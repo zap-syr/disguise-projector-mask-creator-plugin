@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import ProjectorList from './components/ProjectorList.vue'
 import MaskPanel from './components/MaskPanel.vue'
-import { getProjectors } from './services/disguiseService.js'
+import { getProjectors, createSoftEdgeMasks } from './services/disguiseService.js'
 
 const urlParams = new URLSearchParams(window.location.search)
 const directorIp = urlParams.get('director') || 'localhost:80'
@@ -12,6 +12,7 @@ const maskType = ref('soft-edge')
 const projectors = ref([])
 const loading = ref(false)
 const fetchError = ref(null)
+const creating = ref(false)
 
 onMounted(async () => {
   loading.value = true
@@ -26,27 +27,49 @@ onMounted(async () => {
   }
 })
 
-function handleCreate() {
-  console.log('Create masks', { selectedIds: selectedIds.value, maskType: maskType.value })
+async function handleCreate(config) {
+  if (creating.value) return
+  const selected = projectors.value.filter(p => selectedIds.value.includes(p.uid))
+
+  creating.value = true
+  try {
+    if (maskType.value === 'soft-edge') {
+      const useProjectorRes = config.softEdge.resolutionMode === 'projector'
+      const projectorData = selected.map(p => ({
+        name: p.name,
+        width: useProjectorRes ? p.resolution.x : config.softEdge.width,
+        height: useProjectorRes ? p.resolution.y : config.softEdge.height,
+      }))
+      const result = await createSoftEdgeMasks(directorIp, projectorData, config.softEdge.suffix)
+      console.log('Soft edge masks created:', result)
+    }
+  } catch (e) {
+    console.error('Failed to create masks:', e)
+  } finally {
+    creating.value = false
+  }
 }
 </script>
 
 <template>
   <div class="app-shell">
-    <div class="card left-card">
-      <ProjectorList
-        v-model:selected="selectedIds"
-        :projectors="projectors"
-        :loading="loading"
-        :error="fetchError"
-      />
-    </div>
-    <div class="card right-card">
-      <MaskPanel
-        v-model:maskType="maskType"
-        :selectedCount="selectedIds.length"
-        @create="handleCreate"
-      />
+    <div class="panels-wrapper">
+      <div class="card left-card">
+        <ProjectorList
+          v-model:selected="selectedIds"
+          :projectors="projectors"
+          :loading="loading"
+          :error="fetchError"
+        />
+      </div>
+      <div class="card right-card">
+        <MaskPanel
+          v-model:maskType="maskType"
+          :selectedCount="selectedIds.length"
+          :creating="creating"
+          @create="handleCreate"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -79,27 +102,31 @@ body {
 <style scoped>
 .app-shell {
   display: flex;
+  justify-content: center;
+  align-items: stretch;
   height: 100vh;
   background: #141414;
   padding: 16px;
-  gap: 12px;
   overflow: hidden;
 }
 
+.panels-wrapper {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+}
+
 .card {
+  flex: 1;
+  min-width: 0;
+  max-width: 720px;
   background: #1e1e1e;
   border: 1px solid #2a2a2a;
   border-radius: 6px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-.left-card {
-  flex: 1;
-}
-
-.right-card {
-  flex: 1;
 }
 </style>

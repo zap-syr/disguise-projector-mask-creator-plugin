@@ -37,3 +37,22 @@ return run()
   const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
   return projectors.sort((a, b) => collator.compare(a.name, b.name))
 }
+
+export async function createSoftEdgeMasks(directorIp, projectors, suffix) {
+  const script = `
+def run():
+    projectors = ${JSON.stringify(projectors)}
+    suffix = ${JSON.stringify(suffix)}
+    results = []
+    for proj in projectors:
+        mask_name = proj["name"] + suffix
+        path = "objects/softedgetexture/" + mask_name + ".apx"
+        mask = resourceManager.loadOrCreate(path, SoftEdgeTexture)
+        if mask:
+            mask.size = Vec2(proj["width"], proj["height"])
+            results.append(mask_name)
+    return results
+return run()
+`
+  return await executePython(directorIp, script)
+}
