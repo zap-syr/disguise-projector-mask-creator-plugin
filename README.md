@@ -1,44 +1,67 @@
-# projector-mask-creator
+# Disguise Projector Mask Creator Plugin
 
-This template should help get you started developing with Vue 3 in Vite.
+This plugin provides a streamlined interface for batch-creating soft edge and composite mask resources in Disguise Designer. Select any number of projectors from the active session, configure mask settings, and generate the corresponding texture assets in a single action.
 
-## Recommended IDE Setup
+## Download
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Download the latest release - [Projector Mask Creator](https://github.com/zap-syr/disguise-projector-mask-creator-plugin/releases/latest/download/Projector.Mask.Creator.zip)
 
-## Recommended Browser Setup
+## Installation
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+To install the plugin, follow the official Disguise documentation steps - [Installing Plugins](https://help.disguise.one/designer/plugins/designer-plugin-overview#installing-plugins)
 
-## Customize configuration
+## Plugin Overview
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### Projector List
 
-## Project Setup
+The left panel lists all projectors found in the active Disguise Designer session.
 
-```sh
-npm install
-```
+- **Search** — filter projectors by name in real time
+- **Checkboxes** — select individual projectors or use Select All / Deselect All
+- **Natural sorting** — projectors are sorted numerically (e.g. Projector 1, 2, 10)
+- **Resolution display** — each projector shows its output resolution
 
-### Compile and Hot-Reload for Development
+### Creating Masks
 
-```sh
-npm run dev
-```
+Select one or more projectors, configure the mask settings in the right panel, and click **Create Masks**. The plugin will generate the requested mask resources for every selected projector.
 
-### Compile and Minify for Production
+## Settings Panel
 
-```sh
-npm run build
-```
+### Mask Type
 
-### Lint with [ESLint](https://eslint.org/)
+Choose between two mask types using the segmented control:
 
-```sh
-npm run lint
-```
+| Type | Description |
+|---|---|
+| **Soft Edge Mask** | Creates a `SoftEdgeTexture` resource for each selected projector |
+| **Composite Mask** | Creates a `CompositeTexture` resource with one or more `SoftEdgeTexture` layers for each selected projector |
+
+### Mask Resolution
+
+| Option | Description |
+|---|---|
+| **Projector Resolution** | Each mask is sized to match its projector's native output resolution |
+| **Manual** | All masks are created at a fixed width × height entered manually |
+
+### Soft Edge Mask Options
+
+| Setting | Description |
+|---|---|
+| **Suffix** | Text appended to the projector name to form the mask resource name (e.g. `_mask` → `Projector 1_mask`) |
+| **Assign on Projector Feed** | When enabled, the created mask is automatically assigned to the matching projector feed |
+
+### Composite Mask Options
+
+| Setting | Description |
+|---|---|
+| **Layers** | Add one or more layers, each with a suffix and a blend mode. Suffixes must be unique and non-empty |
+| **Blend Mode** | Per-layer blend mode: Over, Alpha, Add, or Multiply |
+| **Assign on Projector Feed** | When enabled, the created composite mask is automatically assigned to the matching projector feed |
+
+## Issues
+
+Found a bug or have a feature request? [Open an issue](https://github.com/zap-syr/disguise-projector-mask-creator-plugin/issues/new)
+
+## License
+
+This project is licensed under the terms of the MIT License.
