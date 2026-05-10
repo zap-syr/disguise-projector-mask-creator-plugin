@@ -38,11 +38,18 @@ return run()
   return projectors.sort((a, b) => collator.compare(a.name, b.name))
 }
 
-export async function createSoftEdgeMasks(directorIp, projectors, suffix) {
+export async function createSoftEdgeMasks(directorIp, projectors, suffix, assignOnFeed) {
   const script = `
 def run():
     projectors = ${JSON.stringify(projectors)}
     suffix = ${JSON.stringify(suffix)}
+    assign_on_feed = ${assignOnFeed ? 'True' : 'False'}
+    feed_rect_map = {}
+    if assign_on_feed:
+        proj_names = [p["name"] for p in projectors]
+        for f in resourceManager.allResources(FeedRect):
+            if f.referenceDisplay and f.referenceDisplay.description in proj_names:
+                feed_rect_map[f.referenceDisplay.description] = f
     results = []
     for proj in projectors:
         mask_name = proj["name"] + suffix
@@ -52,6 +59,11 @@ def run():
             markDirty(mask)
             mask.size = Vec2(proj["width"], proj["height"])
             mask.saveOnDelete()
+            if assign_on_feed and proj["name"] in feed_rect_map:
+                feed_rect = feed_rect_map[proj["name"]]
+                markDirty(feed_rect)
+                feed_rect.mask = mask
+                feed_rect.saveOnDelete()
             results.append(mask_name)
     return results
 return run()
@@ -59,11 +71,18 @@ return run()
   return await executePython(directorIp, script)
 }
 
-export async function createCompositeMasks(directorIp, projectors, layers) {
+export async function createCompositeMasks(directorIp, projectors, layers, assignOnFeed) {
   const script = `
 def run():
     projectors = ${JSON.stringify(projectors)}
     layers = ${JSON.stringify(layers)}
+    assign_on_feed = ${assignOnFeed ? 'True' : 'False'}
+    feed_rect_map = {}
+    if assign_on_feed:
+        proj_names = [p["name"] for p in projectors]
+        for f in resourceManager.allResources(FeedRect):
+            if f.referenceDisplay and f.referenceDisplay.description in proj_names:
+                feed_rect_map[f.referenceDisplay.description] = f
     results = []
     for proj in projectors:
         comp_name = proj["name"] + "_comp"
@@ -84,6 +103,11 @@ def run():
                 comp.blendModes[i] = layer["blendMode"]
             comp.saveOnDelete()
             comp.activate()
+            if assign_on_feed and proj["name"] in feed_rect_map:
+                feed_rect = feed_rect_map[proj["name"]]
+                markDirty(feed_rect)
+                feed_rect.mask = comp
+                feed_rect.saveOnDelete()
             results.append(comp_name)
     return results
 return run()

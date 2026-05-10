@@ -14,12 +14,14 @@ const softResolutionMode = ref('projector')
 const softWidth = ref(1920)
 const softHeight = ref(1080)
 const softSuffix = ref('')
+const softAssignOnFeed = ref(false)
 
 // Composite state
 const compositeResolutionMode = ref('projector')
 const compositeWidth = ref(1920)
 const compositeHeight = ref(1080)
 const layers = ref([])
+const compositeAssignOnFeed = ref(false)
 let nextLayerId = 1
 
 const BLEND_MODES = [
@@ -48,12 +50,14 @@ function handleCreate() {
       resolutionMode: softResolutionMode.value,
       width: softWidth.value,
       height: softHeight.value,
+      assignOnFeed: softAssignOnFeed.value,
     },
     composite: {
       resolutionMode: compositeResolutionMode.value,
       width: compositeWidth.value,
       height: compositeHeight.value,
       layers: layers.value.map((l) => ({ suffix: l.suffix, blendMode: l.blendMode })),
+      assignOnFeed: compositeAssignOnFeed.value,
     },
   })
 }
@@ -135,6 +139,15 @@ function handleCreate() {
         <div class="settings-group">
           <div class="settings-group-header">Suffix</div>
           <input v-model="softSuffix" type="text" class="field-input full" placeholder="suffix" />
+        </div>
+
+        <div class="settings-group">
+          <div class="toggle-row" @click="softAssignOnFeed = !softAssignOnFeed">
+            <span class="toggle-label">Assign on Projector Feed</span>
+            <div class="toggle-track" :class="{ on: softAssignOnFeed }">
+              <div class="toggle-knob"></div>
+            </div>
+          </div>
         </div>
       </template>
 
@@ -234,6 +247,15 @@ function handleCreate() {
                   </svg>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="toggle-row" @click="compositeAssignOnFeed = !compositeAssignOnFeed">
+            <span class="toggle-label">Assign on Projector Feed</span>
+            <div class="toggle-track" :class="{ on: compositeAssignOnFeed }">
+              <div class="toggle-knob"></div>
             </div>
           </div>
         </div>
@@ -601,5 +623,49 @@ function handleCreate() {
   text-align: center;
   line-height: 1.5;
   margin: 0;
+}
+
+/* ── Toggle row ─────────────────────────────── */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #cccccc;
+}
+
+.toggle-track {
+  width: 34px;
+  height: 18px;
+  border-radius: 9px;
+  background: #3a3a3a;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  transition: background 0.2s ease;
+}
+
+.toggle-track.on {
+  background: #0a84ff;
+}
+
+.toggle-knob {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #888888;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.toggle-track.on .toggle-knob {
+  background: #ffffff;
+  transform: translateX(16px);
 }
 </style>

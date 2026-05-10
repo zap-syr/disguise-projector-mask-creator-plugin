@@ -42,7 +42,7 @@ async function handleCreate(config) {
         width: useProjectorRes ? p.resolution.x : config.softEdge.width,
         height: useProjectorRes ? p.resolution.y : config.softEdge.height,
       }))
-      const result = await createSoftEdgeMasks(directorIp, projectorData, config.softEdge.suffix)
+      const result = await createSoftEdgeMasks(directorIp, projectorData, config.softEdge.suffix, config.softEdge.assignOnFeed)
       console.log('Soft edge masks created:', result)
     } else if (maskType.value === 'composite') {
       const useProjectorRes = config.composite.resolutionMode === 'projector'
@@ -55,7 +55,7 @@ async function handleCreate(config) {
         suffix: l.suffix,
         blendMode: BLEND_MODE_INT[l.blendMode] ?? 0,
       }))
-      const result = await createCompositeMasks(directorIp, projectorData, layerData)
+      const result = await createCompositeMasks(directorIp, projectorData, layerData, config.composite.assignOnFeed)
       console.log('Composite masks created:', result)
     }
   } catch (e) {
