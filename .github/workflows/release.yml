@@ -1,0 +1,61 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag to release (e.g. v1.0.1)'
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Write d3plugin.json
+        run: |
+          REF="${{ github.event.inputs.version || github.ref_name }}"
+          VERSION="${REF#v}"
+          echo "{\"name\":\"Projector Mask Creator\",\"version\":\"$VERSION\",\"entry\":\"index.html\"}" \
+            > dist/d3plugin.json
+
+      - name: Zip dist folder
+        run: cd dist && zip -r "../Projector Mask Creator.zip" .
+
+      - name: Extract changelog section
+        run: |
+          REF="${{ github.event.inputs.version || github.ref_name }}"
+          VERSION="${REF#v}"
+
+          CHANGELOG=$(awk \
+            "/^## \[${VERSION}\]/{found=1; next} found && /^## \[/{exit} found" \
+            CHANGELOG.md | tr -d '\r')
+
+          if [ -z "$CHANGELOG" ]; then
+            echo "ERROR: No changelog entry found for version ${VERSION}"
+            exit 1
+          fi
+
+          echo "$CHANGELOG" > release_notes.md
+
+      - name: Create release and upload asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          body_path: release_notes.md
+          files: "Projector Mask Creator.zip"
