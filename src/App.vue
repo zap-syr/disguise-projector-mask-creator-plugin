@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import ProjectorList from './components/ProjectorList.vue'
 import MaskPanel from './components/MaskPanel.vue'
-import { getProjectors, createSoftEdgeMasks } from './services/disguiseService.js'
+import { getProjectors, createSoftEdgeMasks, createCompositeMasks } from './services/disguiseService.js'
 
 const urlParams = new URLSearchParams(window.location.search)
 const directorIp = urlParams.get('director') || 'localhost:80'
@@ -31,6 +31,8 @@ async function handleCreate(config) {
   if (creating.value) return
   const selected = projectors.value.filter(p => selectedIds.value.includes(p.uid))
 
+  const BLEND_MODE_INT = { over: 0, alpha: 1, add: 2, multiply: 3 }
+
   creating.value = true
   try {
     if (maskType.value === 'soft-edge') {
@@ -42,6 +44,19 @@ async function handleCreate(config) {
       }))
       const result = await createSoftEdgeMasks(directorIp, projectorData, config.softEdge.suffix)
       console.log('Soft edge masks created:', result)
+    } else if (maskType.value === 'composite') {
+      const useProjectorRes = config.composite.resolutionMode === 'projector'
+      const projectorData = selected.map(p => ({
+        name: p.name,
+        width: useProjectorRes ? p.resolution.x : config.composite.width,
+        height: useProjectorRes ? p.resolution.y : config.composite.height,
+      }))
+      const layerData = config.composite.layers.map(l => ({
+        suffix: l.suffix,
+        blendMode: BLEND_MODE_INT[l.blendMode] ?? 0,
+      }))
+      const result = await createCompositeMasks(directorIp, projectorData, layerData)
+      console.log('Composite masks created:', result)
     }
   } catch (e) {
     console.error('Failed to create masks:', e)

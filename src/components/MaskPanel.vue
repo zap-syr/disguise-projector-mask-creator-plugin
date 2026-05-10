@@ -53,7 +53,7 @@ function handleCreate() {
       resolutionMode: compositeResolutionMode.value,
       width: compositeWidth.value,
       height: compositeHeight.value,
-      layers: layers.value.map(l => ({ suffix: l.suffix, blendMode: l.blendMode })),
+      layers: layers.value.map((l) => ({ suffix: l.suffix, blendMode: l.blendMode })),
     },
   })
 }
@@ -114,8 +114,8 @@ function handleCreate() {
                 v-model.number="softWidth"
                 type="number"
                 class="field-input"
-                placeholder="1920"
                 min="1"
+                placeholder="width"
               />
             </div>
             <span class="resolution-sep">×</span>
@@ -125,8 +125,8 @@ function handleCreate() {
                 v-model.number="softHeight"
                 type="number"
                 class="field-input"
-                placeholder="1080"
                 min="1"
+                placeholder="height"
               />
             </div>
           </div>
@@ -134,7 +134,7 @@ function handleCreate() {
 
         <div class="settings-group">
           <div class="settings-group-header">Suffix</div>
-          <input v-model="softSuffix" type="text" class="field-input full" placeholder="_mask" />
+          <input v-model="softSuffix" type="text" class="field-input full" placeholder="suffix" />
         </div>
       </template>
 
@@ -165,7 +165,7 @@ function handleCreate() {
                 v-model.number="compositeWidth"
                 type="number"
                 class="field-input"
-                placeholder="1920"
+                placeholder="width"
                 min="1"
               />
             </div>
@@ -176,7 +176,7 @@ function handleCreate() {
                 v-model.number="compositeHeight"
                 type="number"
                 class="field-input"
-                placeholder="1080"
+                placeholder="height"
                 min="1"
               />
             </div>
