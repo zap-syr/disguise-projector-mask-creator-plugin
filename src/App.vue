@@ -100,7 +100,6 @@ body {
 }
 
 .right-card {
-  width: 280px;
-  flex-shrink: 0;
+  flex: 1;
 }
 </style>

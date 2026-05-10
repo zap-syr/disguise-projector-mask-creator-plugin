@@ -15,22 +15,24 @@ const selectedIds = ref([])
 const filtered = computed(() => {
   const q = search.value.toLowerCase().trim()
   if (!q) return props.projectors
-  return props.projectors.filter(p => p.name.toLowerCase().includes(q))
+  return props.projectors.filter((p) => p.name.toLowerCase().includes(q))
 })
 
 const allChecked = computed(
-  () => filtered.value.length > 0 && filtered.value.every(p => selectedIds.value.includes(p.uid))
+  () => filtered.value.length > 0 && filtered.value.every((p) => selectedIds.value.includes(p.uid)),
 )
 
 const someChecked = computed(
-  () => filtered.value.some(p => selectedIds.value.includes(p.uid)) && !allChecked.value
+  () => filtered.value.some((p) => selectedIds.value.includes(p.uid)) && !allChecked.value,
 )
 
 function toggleSelectAll() {
   if (allChecked.value || someChecked.value) {
-    selectedIds.value = selectedIds.value.filter(uid => !filtered.value.some(p => p.uid === uid))
+    selectedIds.value = selectedIds.value.filter(
+      (uid) => !filtered.value.some((p) => p.uid === uid),
+    )
   } else {
-    const toAdd = filtered.value.map(p => p.uid).filter(uid => !selectedIds.value.includes(uid))
+    const toAdd = filtered.value.map((p) => p.uid).filter((uid) => !selectedIds.value.includes(uid))
     selectedIds.value = [...selectedIds.value, ...toAdd]
   }
   emit('update:selected', [...selectedIds.value])
@@ -38,7 +40,7 @@ function toggleSelectAll() {
 
 function toggleProjector(uid) {
   if (selectedIds.value.includes(uid)) {
-    selectedIds.value = selectedIds.value.filter(i => i !== uid)
+    selectedIds.value = selectedIds.value.filter((i) => i !== uid)
   } else {
     selectedIds.value = [...selectedIds.value, uid]
   }
@@ -74,7 +76,11 @@ function isSelected(uid) {
       <div class="col-check">
         <div
           class="checkbox"
-          :class="{ 'is-checked': allChecked, 'is-indeterminate': someChecked, 'is-disabled': loading || !!error || filtered.length === 0 }"
+          :class="{
+            'is-checked': allChecked,
+            'is-indeterminate': someChecked,
+            'is-disabled': loading || !!error || filtered.length === 0,
+          }"
           role="checkbox"
           :aria-checked="allChecked"
           @click="!loading && !error && filtered.length > 0 && toggleSelectAll()"
@@ -109,7 +115,7 @@ function isSelected(uid) {
       <template v-else-if="loading">
         <div v-for="i in 6" :key="i" class="skeleton-row">
           <div class="skeleton-check" />
-          <div class="skeleton-name" :style="{ width: `${55 + (i * 13) % 30}%` }" />
+          <div class="skeleton-name" :style="{ width: `${55 + ((i * 13) % 30)}%` }" />
           <div class="skeleton-res" />
         </div>
       </template>
@@ -224,7 +230,9 @@ function isSelected(uid) {
   padding: 7px 10px 7px 30px;
   font-size: 12px;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .search-input::placeholder {
@@ -350,8 +358,13 @@ function isSelected(uid) {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 
 /* Projector rows */
@@ -393,9 +406,10 @@ function isSelected(uid) {
 }
 
 .col-res {
-  width: 100px;
+  width: 120px;
   flex-shrink: 0;
   text-align: right;
+  padding-right: 24px;
 }
 
 .row-text {
@@ -424,7 +438,9 @@ function isSelected(uid) {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .checkbox:hover:not(.is-disabled) {
