@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 defineProps({
   maskType: { type: String, default: 'soft-edge' },
@@ -32,12 +32,30 @@ const BLEND_MODES = [
 ]
 
 function addLayer() {
-  layers.value.push({ id: nextLayerId++, suffix: '', blendMode: 'over' })
+  layers.value.push({ id: nextLayerId++, suffix: '', blendMode: 'add' })
 }
 
 function removeLayer(id) {
   layers.value = layers.value.filter((l) => l.id !== id)
 }
+
+const duplicateLayerSuffixes = computed(() => {
+  const seen = new Set()
+  const dups = new Set()
+  for (const l of layers.value) {
+    if (l.suffix) {
+      if (seen.has(l.suffix)) dups.add(l.suffix)
+      else seen.add(l.suffix)
+    }
+  }
+  return dups
+})
+
+function layerHasError(layer) {
+  return !layer.suffix || duplicateLayerSuffixes.value.has(layer.suffix)
+}
+
+const hasLayerErrors = computed(() => layers.value.some(l => layerHasError(l)))
 
 function setMaskType(type) {
   emit('update:maskType', type)
@@ -222,9 +240,11 @@ function handleCreate() {
               <div class="field-col">
                 <span class="field-label">Suffix</span>
                 <input
-                  v-model="layer.suffix"
+                  :value="layer.suffix"
+                  @input="layer.suffix = $event.target.value.toLowerCase()"
                   type="text"
                   class="field-input"
+                  :class="{ invalid: layerHasError(layer) }"
                   placeholder="_layer"
                 />
               </div>
@@ -263,7 +283,7 @@ function handleCreate() {
     </div>
 
     <div class="panel-footer">
-      <button class="btn-create" :disabled="selectedCount === 0 || creating" @click="handleCreate">
+      <button class="btn-create" :disabled="selectedCount === 0 || creating || (maskType === 'composite' && hasLayerErrors)" @click="handleCreate">
         {{ creating ? 'Creating…' : 'Create Masks' }}
       </button>
     </div>
@@ -444,6 +464,10 @@ function handleCreate() {
 .field-input:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.field-input.invalid {
+  border-color: #ef4444;
 }
 
 /* Hide number input spinners */
